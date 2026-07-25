@@ -25,6 +25,29 @@
 	top: 8px;
 }
 
+.home-btn
+{
+	position: absolute;
+	top: 8px;
+	right: 15px;
+	display: grid;
+	place-items: center;
+	box-sizing: border-box;
+	width: 36px;
+	height: 28px;
+	border: 1px solid var(--border-color);
+	background: var(--card-bg);
+	color: var(--secondary-text);
+	font-size: 1rem;
+	line-height: 1;
+	text-decoration: none;
+}
+
+.home-btn:hover
+{
+	background: var(--btn-hover);
+}
+
 .settings-scrim
 {
 	position: fixed;

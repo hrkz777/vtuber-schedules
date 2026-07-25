@@ -27,6 +27,7 @@
 	"settings_select_target_desc": "表示対象を選択します",
 	"settings_select_size_desc": "表示サイズを選択します",
 	"settings_back_to_list": "設定一覧へ戻る",
+	"back_to_top": "トップへ戻る",
 	"settings_close": "設定を閉じる",
 	"settings_toggle_on": "オン",
 	"settings_toggle_off": "オフ",

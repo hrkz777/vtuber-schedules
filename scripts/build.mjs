@@ -9,9 +9,15 @@ const templatePath = path.join(
 	'templates',
 	'index.html.tpl'
 );
+const topTemplatePath = path.join(
+	projectDirectory,
+	'templates',
+	'top.html.tpl'
+);
 const outputDirectory = path.join(projectDirectory, 'html');
 
-const pages = parsePages(process.env.PAGES_JSON);
+const siteConfig = parseSiteConfig(process.env.PAGES_JSON);
+const pages = siteConfig.pages;
 const supportedLanguages = ['ja', 'en'];
 const groupLocalizations = {
 	agency: parseLocalizations(
@@ -35,7 +41,7 @@ const apiBaseUrl = normalizeApiBaseUrl(
 	process.env.LIVES_JSON_ROOT || ''
 );
 
-function parsePages(value)
+function parseSiteConfig(value)
 {
 	const source = requireString(value, 'PAGES_JSON');
 	let config;
@@ -51,7 +57,27 @@ function parsePages(value)
 	if (!Array.isArray(config.pages) || config.pages.length === 0)
 		throw new Error('PAGES_JSON.pages must be a non-empty array');
 
-	return config.pages;
+	if (
+		typeof config.index !== 'object'
+		|| config.index === null
+		|| Array.isArray(config.index)
+	) {
+		throw new Error('PAGES_JSON.index must be an object');
+	}
+
+	return {
+		index: {
+			title: requireString(
+				config.index.title,
+				'PAGES_JSON.index.title'
+			),
+			heading: requireString(
+				config.index.heading,
+				'PAGES_JSON.index.heading'
+			),
+		},
+		pages: config.pages,
+	};
 }
 
 function parseLocalizations(value, name)
@@ -151,9 +177,9 @@ function requireString(value, name)
 
 function validateRoute(route)
 {
-	const normalized = route?.trim() ?? "";
+	const normalized = requireString(route, 'route');
 
-	if (!/^[a-z0-9_-]*$/.test(normalized))
+	if (!/^[a-z0-9_-]+$/.test(normalized))
 		throw new Error(`Invalid route: ${normalized}`);
 
 	return normalized;
@@ -278,9 +304,35 @@ async function generatePages()
 	}
 }
 
+async function generateTopPage()
+{
+	const template = await readFile(topTemplatePath, 'utf8');
+	const links = pages.map(page => {
+		const route = validateRoute(page.route);
+		const heading = requireString(page.heading, 'heading');
+
+		return [
+			'\t\t\t<li class="page-index-item">',
+			`\t\t\t\t<a href="./${escapeHtml(route)}/">${escapeHtml(heading)}</a>`,
+			'\t\t\t</li>',
+		].join('\n');
+	}).join('\n');
+	const html = renderTemplate(template, {
+		TITLE: escapeHtml(siteConfig.index.title),
+		HEADING: escapeHtml(siteConfig.index.heading),
+		PAGE_LINKS: links,
+	});
+	const outputPath = path.join(outputDirectory, 'index.html');
+
+	await writeFile(outputPath, html, 'utf8');
+
+	console.log('Generated: html/index.html');
+}
+
 async function build()
 {
 	await generateLocalizationFiles();
+	await generateTopPage();
 	await generatePages();
 }
 

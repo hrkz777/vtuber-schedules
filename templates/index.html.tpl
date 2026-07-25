@@ -13,6 +13,7 @@
 	<div class="header-container">
 		<button id="open-settings" class="settings-btn settings-menu-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="settings-sheet">☰</button>
 		<h1 id="page-title">Loading...</h1>
+		<a class="home-btn" href="{{RELATIVE_BASE_PATH}}" data-i18n-aria-label="back_to_top" aria-label="トップへ">⌂</a>
 		<div class="filter-container">
 			<div id="status-filter-group"  class="filter-group">
 				<button class="filter-group-btn active" data-status="all" data-i18n="filter_all"></button>

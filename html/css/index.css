@@ -1,0 +1,46 @@
+.page-index-body
+{
+	--header-offset: 48px;
+}
+
+.page-index-header
+{
+	padding-block: 12px;
+}
+
+.page-index
+{
+	width: min(100%, 720px);
+	margin: 0 auto;
+}
+
+.page-index-list
+{
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.page-index-item a
+{
+	display: block;
+	padding: 16px;
+	border: 1px solid var(--border-color);
+	border-radius: 10px;
+	background: var(--card-bg);
+	color: var(--text-color);
+	font-weight: bold;
+	text-align: center;
+	text-decoration: none;
+	box-shadow: 0 2px 5px var(--card-shadow);
+	transition: background 0.2s, transform 0.2s;
+}
+
+.page-index-item a:hover
+{
+	background: var(--btn-hover);
+	transform: translateY(-1px);
+}
