@@ -119,10 +119,26 @@ function normalizeApiPath(value)
 		: `/${normalized}`;
 }
 
-function createApiUrl(baseUrl, apiPath)
+function createApiUrl(baseUrl, apiPath, relativeBasePath)
 {
 	const normalizedPath = normalizeApiPath(apiPath);
-	return `${baseUrl}${normalizedPath}`;
+
+	if (baseUrl !== '')
+		return `${baseUrl}${normalizedPath}`;
+
+	return `${relativeBasePath}${normalizedPath.replace(/^\/+/, '')}`;
+}
+
+function createRelativeBasePath(outputPath)
+{
+	const relativePath = path.relative(
+		path.dirname(outputPath),
+		outputDirectory
+	).replaceAll(path.sep, '/');
+
+	return relativePath === ''
+		? './'
+		: `${relativePath}/`;
 }
 
 function requireString(value, name)
@@ -225,17 +241,26 @@ async function generatePages()
 		const title = requireString(page.title, 'title');
 		const heading = requireString(page.heading, 'heading');
 		const agency = requireString(page.agency, 'agency');
-		const apiUrl = createApiUrl(apiBaseUrl, page.apiRoute);
 
 		const outputPath = path.join(outputDirectory, route, 'index.html');
+		const relativeBasePath = createRelativeBasePath(outputPath);
+		const apiUrl = createApiUrl(
+			apiBaseUrl,
+			page.apiRoute,
+			relativeBasePath
+		);
 
 		const html = renderTemplate(template, {
 			TITLE: escapeHtml(title),
 			HEADING: escapeHtml(heading),
+			RELATIVE_BASE_PATH: escapeHtml(relativeBasePath),
 			TITLE_JSON: JSON.stringify(title),
 			HEADING_JSON: JSON.stringify(heading),
 			AGENCY_JSON: JSON.stringify(agency),
 			API_URL_JSON: JSON.stringify(apiUrl),
+			RELATIVE_BASE_PATH_JSON: JSON.stringify(
+				relativeBasePath
+			),
 		});
 
 		await mkdir(path.dirname(outputPath), {

@@ -4,6 +4,9 @@ const PAGE_CONFIG = Object.freeze({
 	heading: typeof rawPageConfig.heading === 'string' ? rawPageConfig.heading : '',
 	agency: typeof rawPageConfig.agency === 'string' ? rawPageConfig.agency : '',
 	apiUrl: typeof rawPageConfig.apiUrl === 'string' ? rawPageConfig.apiUrl : '',
+	relativeBasePath: typeof rawPageConfig.relativeBasePath === 'string'
+		? rawPageConfig.relativeBasePath
+		: '',
 });
 
 const container = document.getElementById('schedule-container');
@@ -22,6 +25,11 @@ let i18n = null;
 let localizedTags = null;
 let allSchedules = [];
 let isUpdating = false;
+
+function createSiteUrl(relativePath)
+{
+	return `${PAGE_CONFIG.relativeBasePath}${String(relativePath).replace(/^\/+/, '')}`;
+}
 
 async function loadLocalizeFile(languageFilePath, fallbackFilePath)
 {
@@ -48,8 +56,14 @@ async function init()
 	applyTheme(currentTheme);
 
 	const browserLang = (navigator.language || navigator.userLanguage).split('-')[0];
-	i18n = await loadLocalizeFile(`/locales/${browserLang}.json`, '/locales/en.json');
-	localizedTags = await loadLocalizeFile(`/groups/${browserLang}/tags.json`, '/groups/en/tags.json');
+	i18n = await loadLocalizeFile(
+		createSiteUrl(`locales/${browserLang}.json`),
+		createSiteUrl('locales/en.json')
+	);
+	localizedTags = await loadLocalizeFile(
+		createSiteUrl(`groups/${browserLang}/tags.json`),
+		createSiteUrl('groups/en/tags.json')
+	);
 
 	const statusFilterGroup = document.getElementById('status-filter-group');
 
@@ -517,10 +531,10 @@ function getPlatformIconPath(platform)
 {
 	switch (platform) {
 		case 'twitch':
-			return '/assets/icons/twitch_icon.png';
+			return createSiteUrl('assets/icons/twitch_icon.png');
 		case 'youtube':
 		default:
-			return '/assets/icons/youtube_icon.png';
+			return createSiteUrl('assets/icons/youtube_icon.png');
 	}
 }
 
@@ -636,7 +650,9 @@ function scrollToElement(element)
 
 if ('serviceWorker' in navigator) {
 	window.addEventListener('load', () => {
-		navigator.serviceWorker.register('/sw.js').catch(error => {
+		navigator.serviceWorker.register(
+			createSiteUrl('sw.js')
+		).catch(error => {
 			console.error('ServiceWorker registration failed:', error);
 		});
 	});

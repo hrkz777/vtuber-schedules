@@ -4,9 +4,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>{{TITLE}}</title>
-	<link rel="stylesheet" href="/css/style.css">
-	<link rel="stylesheet" href="/css/schedule.css">
-	<link rel="stylesheet" href="/css/menu.css">
+	<link rel="stylesheet" href="{{RELATIVE_BASE_PATH}}css/style.css">
+	<link rel="stylesheet" href="{{RELATIVE_BASE_PATH}}css/schedule.css">
+	<link rel="stylesheet" href="{{RELATIVE_BASE_PATH}}css/menu.css">
 </head>
 <body>
 	<!-- ヘッダー -->
@@ -114,10 +114,11 @@
 			title: {{TITLE_JSON}},
 			heading: {{HEADING_JSON}},
 			agency: {{AGENCY_JSON}},
-			apiUrl: {{API_URL_JSON}}
+			apiUrl: {{API_URL_JSON}},
+			relativeBasePath: {{RELATIVE_BASE_PATH_JSON}}
 		});
 	</script>
 	<script src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-	<script src="/script.js"></script>
+	<script src="{{RELATIVE_BASE_PATH}}script.js"></script>
 </body>
 </html>
