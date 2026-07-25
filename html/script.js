@@ -25,6 +25,7 @@ let i18n = null;
 let localizedTags = null;
 let allSchedules = [];
 let isUpdating = false;
+let isLicenseContentLoaded = false;
 
 function createSiteUrl(relativePath)
 {
@@ -207,6 +208,38 @@ function showSettingsView(viewName)
 	document.querySelectorAll('.settings-sheet-view').forEach(view => {
 		view.classList.toggle('active', view.getAttribute('data-view') === viewName);
 	});
+
+	if (viewName === 'license')
+		void loadLicenseContent();
+}
+
+async function loadLicenseContent()
+{
+	if (isLicenseContentLoaded)
+		return;
+
+	const licenseContent = document.getElementById('license-content');
+	if (!licenseContent)
+		return;
+
+	licenseContent.textContent = i18n.license_loading;
+
+	try {
+		const response = await fetch(createSiteUrl('licenses.txt'), {
+			headers: {
+				'Accept': 'text/plain',
+			},
+		});
+		if (!response.ok)
+			throw new Error(`HTTP ${response.status}`);
+
+		licenseContent.textContent = await response.text();
+		isLicenseContentLoaded = true;
+	}
+	catch (error) {
+		licenseContent.textContent = i18n.license_load_error;
+		console.error('Failed to load license information:', error);
+	}
 }
 
 function applySettingValue(setting, value)

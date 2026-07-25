@@ -80,6 +80,21 @@
 					</button>
 				</div>
 			</div>
+
+			<div class="settings-section-block">
+				<div class="settings-section-label" data-i18n="settings_section_information">情報</div>
+				<div class="settings-group-card">
+					<button class="settings-row nav-row" type="button" data-target-view="license">
+						<div class="settings-row-copy">
+							<strong data-i18n="settings_license">ライセンス</strong>
+							<span data-i18n="settings_license_desc">使用している素材のライセンス情報を表示します</span>
+						</div>
+						<div class="settings-row-end">
+							<span class="settings-chevron">›</span>
+						</div>
+					</button>
+				</div>
+			</div>
 		</section>
 
 		<section class="settings-sheet-view" data-view="size">
@@ -106,6 +121,20 @@
 						<span class="settings-check">✓</span>
 					</button>
 				</div>
+			</div>
+		</section>
+
+		<section class="settings-sheet-view" data-view="license">
+			<div class="settings-page-header">
+				<button class="settings-back-btn" type="button" data-back-to="root" data-i18n-aria-label="settings_back_to_list" aria-label="設定一覧へ戻る">‹</button>
+				<div>
+					<strong data-i18n="settings_license">ライセンス</strong>
+					<span data-i18n="settings_license_desc">使用している素材のライセンス情報を表示します</span>
+				</div>
+				<span class="settings-header-spacer" aria-hidden="true"></span>
+			</div>
+			<div class="settings-subpage-block">
+				<pre id="license-content" class="license-content" aria-live="polite"></pre>
 			</div>
 		</section>
 	</aside>
