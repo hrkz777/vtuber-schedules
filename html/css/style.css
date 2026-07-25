@@ -1,0 +1,167 @@
+/* 日本語フォントの読み込み */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+:root
+{
+	--header-offset: 100px;
+	--platform-icon-size: 24px;
+	--platform-icon-offset: 2px;
+	--bg-color: #f4f4f9;
+	--header-bg: #f4f4f9;
+	--text-color: #333;
+	--secondary-text: #666;
+	--muted-text: #888;
+	--border-color: #ddd;
+	--card-bg: #fff;
+	--btn-bg: #ddd;
+	--btn-text: #333;
+	--btn-hover: #eee;
+	--filter-active: #007bff;
+	--filter-text: #fff;
+	--live-color: #e63946;
+	--upcoming-color: #007bff;
+	--video-color: #007bff;
+	--archived-color: #007bff;
+	--hour-label-bg: #ddd;
+	--day-title-color: #444;
+	--card-shadow: rgba(0, 0, 0, 0.1);
+}
+
+html
+{
+	/* スクロールバーは強制表示 */
+	overflow-y: scroll;
+}
+
+body
+{
+	font-family: 'Noto Sans JP', sans-serif;
+	background: var(--bg-color);
+	color: var(--text-color);
+	padding: 10px;
+	padding-top: calc(var(--header-offset) + 10px);
+	margin: 0;
+	transition: background 0.3s, color 0.3s;
+	-webkit-tap-highlight-color: transparent;
+}
+
+body.dark
+{
+	--bg-color: #1a1a1b;
+	--header-bg: #1a1a1b;
+	--text-color: #e4e6eb;
+	--secondary-text: #b0b3b8;
+	--muted-text: #a0a0a0;
+	--border-color: #3e4042;
+	--card-bg: #242526;
+	--btn-bg: #3a3b3c;
+	--btn-text: #e4e6eb;
+	--btn-hover: #4e4f50;
+	--hour-label-bg: #3a3b3c;
+	--day-title-color: #e4e6eb;
+	--card-shadow: rgba(0, 0, 0, 0.3);
+}
+
+h1
+{
+	color: var(--text-color);
+	margin: 0;
+	font-size: 1.2em;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.hidden
+{
+	display: none !important;
+}
+
+/*
+	ヘッダーメニュー
+*/
+.header-container
+{
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	background: var(--header-bg);
+	padding: 5px 20px;
+	z-index: 1000;
+	border-bottom: 1px solid var(--border-color);
+	text-align: center;
+}
+
+.filter-container
+{
+	margin-top: 5px;
+	margin-bottom: 5px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	align-items: center;
+}
+
+.filter-group
+{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	width: 100%;
+
+	margin: 0px;
+	margin-block: 0px;
+	padding: 0px;
+}
+
+.filter-group-btn
+{
+	border: 1px solid var(--border-color);
+	background: var(--card-bg);
+	color: var(--text-color);
+	border-radius: 999px;
+	padding: 4px 0px;
+	font-size: 0.75rem;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.2s;
+
+	/* 5分割か100pxかはウィンドウサイズによって決める */
+	width: min(20%, 100px);
+	height: 30px;
+}
+
+.filter-group-btn.active
+{
+	color: var(--filter-text);
+	background: var(--filter-active);
+	border-color: var(--filter-active);
+}
+
+/*
+	ステータスフィルター用にカラー設定
+*/
+.filter-group-btn[data-status="live"].active
+{
+	background: var(--live-color);
+	border-color: var(--live-color);
+}
+
+.filter-group-btn[data-status="upcoming"].active
+{
+	background: var(--upcoming-color);
+	border-color: var(--upcoming-color);
+}
+
+.filter-group-btn[data-status="video"].active
+{
+	background: var(--video-color);
+	border-color: var(--video-color);
+}
+
+.filter-group-btn[data-status="archived"].active
+{
+	background: var(--archived-color);
+	border-color: var(--archived-color);
+}
+
