@@ -14,10 +14,15 @@ const topTemplatePath = path.join(
 	'templates',
 	'top.html.tpl'
 );
+const defaultLocalePath = path.join(
+	projectDirectory,
+	'html',
+	'locales',
+	'ja.json'
+);
 const outputDirectory = path.join(projectDirectory, 'html');
 
-const siteConfig = parseSiteConfig(process.env.PAGES_JSON);
-const pages = siteConfig.pages;
+const pages = parsePages(process.env.PAGES_JSON);
 const supportedLanguages = ['ja', 'en'];
 const groupLocalizations = {
 	agency: parseLocalizations(
@@ -41,7 +46,7 @@ const apiBaseUrl = normalizeApiBaseUrl(
 	process.env.LIVES_JSON_ROOT || ''
 );
 
-function parseSiteConfig(value)
+function parsePages(value)
 {
 	const source = requireString(value, 'PAGES_JSON');
 	let config;
@@ -57,27 +62,7 @@ function parseSiteConfig(value)
 	if (!Array.isArray(config.pages) || config.pages.length === 0)
 		throw new Error('PAGES_JSON.pages must be a non-empty array');
 
-	if (
-		typeof config.index !== 'object'
-		|| config.index === null
-		|| Array.isArray(config.index)
-	) {
-		throw new Error('PAGES_JSON.index must be an object');
-	}
-
-	return {
-		index: {
-			title: requireString(
-				config.index.title,
-				'PAGES_JSON.index.title'
-			),
-			heading: requireString(
-				config.index.heading,
-				'PAGES_JSON.index.heading'
-			),
-		},
-		pages: config.pages,
-	};
+	return config.pages;
 }
 
 function parseLocalizations(value, name)
@@ -306,7 +291,12 @@ async function generatePages()
 
 async function generateTopPage()
 {
-	const template = await readFile(topTemplatePath, 'utf8');
+	const [template, localeSource] = await Promise.all([
+		readFile(topTemplatePath, 'utf8'),
+		readFile(defaultLocalePath, 'utf8'),
+	]);
+	const locale = JSON.parse(localeSource);
+	const title = requireString(locale.title, 'locales/ja.json.title');
 	const links = pages.map(page => {
 		const route = validateRoute(page.route);
 		const heading = requireString(page.heading, 'heading');
@@ -318,8 +308,8 @@ async function generateTopPage()
 		].join('\n');
 	}).join('\n');
 	const html = renderTemplate(template, {
-		TITLE: escapeHtml(siteConfig.index.title),
-		HEADING: escapeHtml(siteConfig.index.heading),
+		TITLE: escapeHtml(title),
+		HEADING: escapeHtml(title),
 		PAGE_LINKS: links,
 	});
 	const outputPath = path.join(outputDirectory, 'index.html');
