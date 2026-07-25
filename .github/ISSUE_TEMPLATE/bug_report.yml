@@ -1,0 +1,52 @@
+name: Bug Report
+description: 画面表示、フィルタ、翻訳、Pages Function の不具合を報告します
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: 概要
+      placeholder: 例: ステータスフィルタ切り替え時に一覧表示が崩れる
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待する結果
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の結果
+    validations:
+      required: true
+  - type: checkboxes
+    id: areas
+    attributes:
+      label: 関連しそうな領域
+      options:
+        - label: UI / Layout
+        - label: Filter
+        - label: Theme
+        - label: i18n
+        - label: Service Worker
+        - label: `functions/lives.json.js`
+  - type: textarea
+    id: browser
+    attributes:
+      label: ブラウザ・端末
+      placeholder: 例: Chrome 136 / iPhone Safari / Desktop Firefox
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: スクリーンショット・ログ
+

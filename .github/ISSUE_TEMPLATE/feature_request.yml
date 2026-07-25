@@ -1,0 +1,33 @@
+name: Feature Request
+description: UI/UX や表示機能の改善を提案します
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 背景・課題
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 提案内容
+      description: UI、表示ロジック、翻訳、キャッシュなどへの変更内容を書いてください
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: 影響範囲
+      placeholder: |
+        - `html/script.js`
+        - `html/style.css`
+        - `html/locales/*.json`
+        - `functions/lives.json.js`
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 代替案・補足
+
