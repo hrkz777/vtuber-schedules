@@ -17,7 +17,7 @@ const settingsOpenButton = document.getElementById('open-settings');
 const darkThemeToggle = document.getElementById('dark-theme-toggle');
 
 let currentStatus = 'all';
-let hideArchivedInAll = localStorage.getItem('hide-archived-in-all') !== 'false';
+let hideArchivedInAll = localStorage.getItem('hide-archived-in-all') === 'true';
 let currentPlatform = 'all';
 let currentSize = localStorage.getItem('thumb-size') || 'md';
 let currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
