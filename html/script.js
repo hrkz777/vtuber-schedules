@@ -15,6 +15,13 @@ const settingsSheet = document.getElementById('settings-sheet');
 const settingsScrim = document.getElementById('settings-scrim');
 const settingsOpenButton = document.getElementById('open-settings');
 const darkThemeToggle = document.getElementById('dark-theme-toggle');
+const shareDialog = document.getElementById('share-dialog');
+const shareDialogCloseButton = document.getElementById('close-share-dialog');
+const shareOnXLink = document.getElementById('share-on-x');
+const shareOnBlueskyLink = document.getElementById('share-on-bluesky');
+const shareUrlInput = document.getElementById('share-url');
+const shareCopyButton = document.getElementById('copy-share-url');
+const shareStatus = document.getElementById('share-status');
 
 let currentStatus = 'all';
 let hideArchivedInAll = localStorage.getItem('hide-archived-in-all') === 'true';
@@ -26,6 +33,7 @@ let localizedTags = null;
 let allSchedules = [];
 let isUpdating = false;
 let isLicenseContentLoaded = false;
+let lastShareTrigger = null;
 
 function createSiteUrl(relativePath)
 {
@@ -119,6 +127,7 @@ async function init()
 	}
 
 	bindSettingsSheetEvents();
+	bindShareDialogEvents();
 	renderSettingsSummary();
 	await updateData(true);
 }
@@ -450,15 +459,117 @@ function renderSchedule(schedules, statusFilter, i18n)
 		currentGrid.appendChild(card);
 	});
 
-	loadTwitterWidgets();
-
 	return targetCurrentHour || targetLatestLive || targetNextUpcoming;
 }
 
-function loadTwitterWidgets()
+function bindShareDialogEvents()
 {
-	if (typeof twttr !== 'undefined' && twttr.widgets)
-		twttr.widgets.load(container);
+	if (!shareDialog)
+		return;
+
+	shareDialogCloseButton?.addEventListener('click', closeShareDialog);
+	shareDialog.addEventListener('click', event => {
+		if (event.target === shareDialog)
+			closeShareDialog();
+	});
+	shareDialog.addEventListener('close', () => {
+		lastShareTrigger?.focus();
+		lastShareTrigger = null;
+	});
+	shareCopyButton?.addEventListener('click', copyShareUrl);
+}
+
+function shouldUseNativeShare()
+{
+	return typeof navigator.share === 'function'
+		&& window.matchMedia('(pointer: coarse)').matches;
+}
+
+async function shareSchedule(title, url, trigger)
+{
+	if (shouldUseNativeShare()) {
+		const shareData = { title, text: title, url };
+		try {
+			if (typeof navigator.canShare === 'function' && !navigator.canShare(shareData))
+				throw new Error('Share data is not supported');
+			await navigator.share(shareData);
+			return;
+		}
+		catch (error) {
+			if (error?.name === 'AbortError')
+				return;
+		}
+	}
+
+	openShareDialog(title, url, trigger);
+}
+
+function openShareDialog(title, url, trigger)
+{
+	if (!shareDialog || !shareUrlInput || !shareOnXLink || !shareOnBlueskyLink
+		|| !shareCopyButton || !shareStatus)
+		return;
+
+	lastShareTrigger = trigger;
+	shareUrlInput.value = url;
+	shareOnXLink.href = `https://x.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`;
+	shareOnBlueskyLink.href = `https://bsky.app/intent/compose?text=${encodeURIComponent(`${title}\n${url}`)}`;
+	shareCopyButton.textContent = i18n.copy_link;
+	shareStatus.textContent = '';
+
+	if (typeof shareDialog.showModal === 'function')
+		shareDialog.showModal();
+	else
+		shareDialog.setAttribute('open', '');
+}
+
+function closeShareDialog()
+{
+	if (!shareDialog)
+		return;
+
+	if (typeof shareDialog.close === 'function')
+		shareDialog.close();
+	else {
+		shareDialog.removeAttribute('open');
+		lastShareTrigger?.focus();
+		lastShareTrigger = null;
+	}
+}
+
+async function copyShareUrl()
+{
+	if (!shareUrlInput || !shareCopyButton || !shareStatus)
+		return;
+
+	let copied = false;
+	try {
+		if (navigator.clipboard?.writeText) {
+			await navigator.clipboard.writeText(shareUrlInput.value);
+			copied = true;
+		}
+		else {
+			shareUrlInput.select();
+			copied = tryLegacyCopy();
+		}
+	}
+	catch {
+		shareUrlInput.select();
+		copied = tryLegacyCopy();
+	}
+
+	shareCopyButton.textContent = copied ? i18n.copied : i18n.copy_link;
+	shareStatus.textContent = copied ? i18n.copied : i18n.copy_failed;
+}
+
+function tryLegacyCopy()
+{
+	try {
+		return document.execCommand('copy');
+	}
+	catch {
+		return false;
+	}
 }
 
 function createScheduleCard(schedule, dateObj, i18n)
@@ -467,7 +578,6 @@ function createScheduleCard(schedule, dateObj, i18n)
 
 	const text = schedule.title;
 	const watchUrl = getWatchUrl(schedule);
-	const intentUrl = `https://x.com/intent/post?url=${encodeURIComponent(watchUrl)}&text=${encodeURIComponent(text)}`;
 
 	const card = document.createElement('div');
 	card.className = `card ${schedule.status}`;
@@ -527,14 +637,15 @@ function createScheduleCard(schedule, dateObj, i18n)
 	const cardFooter = document.createElement('div');
 	cardFooter.className = 'card-footer';
 
-	const shareLink = document.createElement('a');
-	shareLink.href = intentUrl;
-	shareLink.className = 'twitter-share-button';
-	shareLink.target = '_blank';
-	shareLink.rel = 'noopener noreferrer';
-	shareLink.textContent = i18n.share_on_x;
+	const shareButton = document.createElement('button');
+	shareButton.type = 'button';
+	shareButton.className = 'share-button';
+	shareButton.textContent = i18n.share;
+	shareButton.addEventListener('click', () => {
+		shareSchedule(text, watchUrl, shareButton);
+	});
 
-	cardFooter.appendChild(shareLink);
+	cardFooter.appendChild(shareButton);
 	cardInner.appendChild(time);
 	cardInner.appendChild(metaRow);
 	cardInner.appendChild(title);

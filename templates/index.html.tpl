@@ -139,6 +139,34 @@
 		</section>
 	</aside>
 
+	<dialog id="share-dialog" class="share-dialog" aria-labelledby="share-dialog-title">
+		<div class="share-dialog-content">
+			<div class="share-dialog-header">
+				<strong id="share-dialog-title" data-i18n="share_dialog_title">共有</strong>
+				<button id="close-share-dialog" class="share-dialog-close" type="button" data-i18n-aria-label="share_dialog_close" aria-label="共有を閉じる">×</button>
+			</div>
+			<div class="share-targets">
+				<a id="share-on-x" class="share-target" target="_blank" rel="noopener noreferrer">
+					<span class="share-target-icon share-target-x" aria-hidden="true">
+						<img src="{{RELATIVE_BASE_PATH}}assets/icons/x_icon.svg" alt="">
+					</span>
+					<span data-i18n="share_x">X</span>
+				</a>
+				<a id="share-on-bluesky" class="share-target" target="_blank" rel="noopener noreferrer">
+					<span class="share-target-icon share-target-bluesky" aria-hidden="true">
+						<img src="{{RELATIVE_BASE_PATH}}assets/icons/bluesky_icon.svg" alt="">
+					</span>
+					<span data-i18n="share_bluesky">Bluesky</span>
+				</a>
+			</div>
+			<div class="share-copy-row">
+				<input id="share-url" class="share-url" type="text" readonly data-i18n-aria-label="share_url_label" aria-label="共有URL">
+				<button id="copy-share-url" class="share-copy-button" type="button" data-i18n="copy_link">コピー</button>
+			</div>
+			<div id="share-status" class="share-status" role="status" aria-live="polite"></div>
+		</div>
+	</dialog>
+
 	<script>
 		window.PAGE_CONFIG = Object.freeze({
 			title: {{TITLE_JSON}},
@@ -148,7 +176,6 @@
 			relativeBasePath: {{RELATIVE_BASE_PATH_JSON}}
 		});
 	</script>
-	<script src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 	<script src="{{RELATIVE_BASE_PATH}}script.js"></script>
 </body>
 </html>
