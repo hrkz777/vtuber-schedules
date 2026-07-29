@@ -1,0 +1,11 @@
+{
+	"pages": [
+		{
+			"route": "example",
+			"title": "Example VTuber Schedule",
+			"heading": "Example VTuber Schedule",
+			"agency": "example-agency",
+			"apiRoute": "/agency/example-agency"
+		}
+	]
+}
