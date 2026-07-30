@@ -4,6 +4,19 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>{{TITLE}}</title>
+	<script>
+		(() => {
+			let theme;
+			try {
+				theme = localStorage.getItem('theme');
+			} catch {
+				theme = null;
+			}
+			if (theme !== 'dark' && theme !== 'light')
+				theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+			document.documentElement.classList.toggle('dark', theme === 'dark');
+		})();
+	</script>
 	<link rel="stylesheet" href="{{RELATIVE_BASE_PATH}}css/style.css">
 	<link rel="stylesheet" href="{{RELATIVE_BASE_PATH}}css/schedule.css">
 	<link rel="stylesheet" href="{{RELATIVE_BASE_PATH}}css/menu.css">

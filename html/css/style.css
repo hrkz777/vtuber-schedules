@@ -45,7 +45,7 @@ body
 	-webkit-tap-highlight-color: transparent;
 }
 
-body.dark
+html.dark
 {
 	--bg-color: #1a1a1b;
 	--header-bg: #1a1a1b;

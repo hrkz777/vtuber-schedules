@@ -27,7 +27,7 @@ let currentStatus = 'all';
 let hideArchivedInAll = localStorage.getItem('hide-archived-in-all') === 'true';
 let currentPlatform = 'all';
 let currentSize = localStorage.getItem('thumb-size') || 'md';
-let currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+let currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
 let i18n = null;
 let localizedTags = null;
 let allSchedules = [];
@@ -777,10 +777,7 @@ function applyTheme(theme)
 {
 	currentTheme = theme;
 	localStorage.setItem('theme', theme);
-	if (theme === 'dark')
-		document.body.classList.add('dark');
-	else
-		document.body.classList.remove('dark');
+	document.documentElement.classList.toggle('dark', theme === 'dark');
 	renderSettingsSummary();
 }
 

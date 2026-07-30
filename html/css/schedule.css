@@ -161,7 +161,7 @@
 /*
 	ダークテーマ時のアイコンの背景
 */
-body.dark .platform-icon
+html.dark .platform-icon
 {
 	background: rgba(36, 37, 38, 0.92);
 }
@@ -301,14 +301,14 @@ body.dark .platform-icon
 	background: #292929;
 }
 
-body.dark .share-button
+html.dark .share-button
 {
 	background: #3f3f3f;
 	color: #fff;
 }
 
-body.dark .share-button:hover,
-body.dark .share-button:focus-visible
+html.dark .share-button:hover,
+html.dark .share-button:focus-visible
 {
 	background: #555;
 }
