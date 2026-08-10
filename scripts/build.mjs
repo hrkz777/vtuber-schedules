@@ -24,6 +24,7 @@ const outputDirectory = path.join(projectDirectory, 'html');
 
 const pages = parsePages(process.env.PAGES_JSON);
 const supportedLanguages = ['ja', 'en'];
+const supportedPlatforms = ['youtube', 'twitch', 'twitcast'];
 const groupLocalizations = {
 	agency: parseLocalizations(
 		process.env.AGENCY_JSON,
@@ -170,6 +171,29 @@ function validateRoute(route)
 	return normalized;
 }
 
+function validatePlatforms(platforms)
+{
+	if (platforms === undefined)
+		return null;
+
+	if (!Array.isArray(platforms) || platforms.length === 0)
+		throw new Error('platforms must be a non-empty array');
+
+	const normalized = platforms.map((platform, index) =>
+		requireString(platform, `platforms[${index}]`)
+	);
+
+	for (const platform of normalized) {
+		if (!supportedPlatforms.includes(platform))
+			throw new Error(`Unsupported platform: ${platform}`);
+	}
+
+	if (new Set(normalized).size !== normalized.length)
+		throw new Error('platforms must not contain duplicates');
+
+	return normalized;
+}
+
 function escapeHtml(value)
 {
 	return String(value)
@@ -252,6 +276,7 @@ async function generatePages()
 		const title = requireString(page.title, 'title');
 		const heading = requireString(page.heading, 'heading');
 		const agency = requireString(page.agency, 'agency');
+		const platforms = validatePlatforms(page.platforms);
 
 		const outputPath = path.join(outputDirectory, route, 'index.html');
 		const relativeBasePath = createRelativeBasePath(outputPath);
@@ -268,6 +293,7 @@ async function generatePages()
 			TITLE_JSON: JSON.stringify(title),
 			HEADING_JSON: JSON.stringify(heading),
 			AGENCY_JSON: JSON.stringify(agency),
+			PLATFORMS_JSON: JSON.stringify(platforms),
 			API_URL_JSON: JSON.stringify(apiUrl),
 			RELATIVE_BASE_PATH_JSON: JSON.stringify(
 				relativeBasePath

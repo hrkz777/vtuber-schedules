@@ -5,6 +5,11 @@
 			"title": "Example VTuber Schedule",
 			"heading": "Example VTuber Schedule",
 			"agency": "example-agency",
+			"platforms": [
+				"youtube",
+				"twitch",
+				"twitcast"
+			],
 			"apiRoute": "/agency/example-agency"
 		}
 	]

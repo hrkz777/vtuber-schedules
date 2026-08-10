@@ -1,8 +1,16 @@
 const rawPageConfig = window.PAGE_CONFIG || {};
+const supportedPlatforms = Object.freeze(['youtube', 'twitch', 'twitcast']);
+const configuredPlatforms = Array.isArray(rawPageConfig.platforms)
+	? rawPageConfig.platforms.filter(platform => supportedPlatforms.includes(platform))
+	: supportedPlatforms;
 const PAGE_CONFIG = Object.freeze({
 	title: typeof rawPageConfig.title === 'string' ? rawPageConfig.title : '',
 	heading: typeof rawPageConfig.heading === 'string' ? rawPageConfig.heading : '',
 	agency: typeof rawPageConfig.agency === 'string' ? rawPageConfig.agency : '',
+	platforms: Object.freeze(configuredPlatforms.length > 0
+		? [...new Set(configuredPlatforms)]
+		: [...supportedPlatforms]),
+	hasPlatformConfiguration: Array.isArray(rawPageConfig.platforms),
 	apiUrl: typeof rawPageConfig.apiUrl === 'string' ? rawPageConfig.apiUrl : '',
 	relativeBasePath: typeof rawPageConfig.relativeBasePath === 'string'
 		? rawPageConfig.relativeBasePath
@@ -357,8 +365,9 @@ function renderFiltered(isInitial = false, isManualFilter = false)
 		const matchStatus = (currentStatus === 'all' || s.status === currentStatus);
 		const hideArchived = currentStatus === 'all' && hideArchivedInAll && s.status === 'archived';
 		const matchAgency = s.agency === PAGE_CONFIG.agency;
-		const schedulePlatform = s.platform || 'youtube';
-		const matchPlatform = (currentPlatform === 'all' || schedulePlatform === currentPlatform);
+		const schedulePlatform = normalizePlatform(s.platform);
+		const matchPlatform = PAGE_CONFIG.platforms.includes(schedulePlatform)
+			&& (currentPlatform === 'all' || schedulePlatform === currentPlatform);
 		return matchStatus && !hideArchived && matchAgency && matchPlatform;
 	});
 
@@ -673,7 +682,9 @@ function getWatchUrl(schedule)
 
 function getPlatformIconPath(platform)
 {
-	switch (platform) {
+	switch (normalizePlatform(platform)) {
+		case 'twitcast':
+			return createSiteUrl('assets/icons/twitcast_icon.png');
 		case 'twitch':
 			return createSiteUrl('assets/icons/twitch_icon.png');
 		case 'youtube':
@@ -684,13 +695,23 @@ function getPlatformIconPath(platform)
 
 function getPlatformLabel(platform)
 {
-	switch (platform) {
+	switch (normalizePlatform(platform)) {
+		case 'twitcast':
+			return 'Twitcast';
 		case 'twitch':
 			return 'Twitch';
 		case 'youtube':
 		default:
 			return 'YouTube';
 	}
+}
+
+function normalizePlatform(platform)
+{
+	if (platform === 'twitcasting')
+		return 'twitcast';
+
+	return platform || 'youtube';
 }
 
 function getStatusLabel(status, i18n)
@@ -716,21 +737,29 @@ function updatePlatformFilters()
 		return;
 
 	platformContainer.innerHTML = '';
+	if (PAGE_CONFIG.hasPlatformConfiguration && PAGE_CONFIG.platforms.length === 1) {
+		platformContainer.hidden = true;
+		return;
+	}
+
+	platformContainer.hidden = false;
 	platformContainer.appendChild(createHeaderFilterButton(i18n.filter_all || 'All', currentPlatform === 'all', () => {
 		currentPlatform = 'all';
 		updatePlatformFilters();
 		renderFiltered(false, true);
 	}));
-	platformContainer.appendChild(createHeaderFilterButton(i18n.platform_youtube || 'YouTube', currentPlatform === 'youtube', () => {
-		currentPlatform = 'youtube';
-		updatePlatformFilters();
-		renderFiltered(false, true);
-	}));
-	platformContainer.appendChild(createHeaderFilterButton(i18n.platform_twitch || 'Twitch', currentPlatform === 'twitch', () => {
-		currentPlatform = 'twitch';
-		updatePlatformFilters();
-		renderFiltered(false, true);
-	}));
+	const platformLabels = {
+		youtube: i18n.platform_youtube || 'YouTube',
+		twitch: i18n.platform_twitch || 'Twitch',
+		twitcast: i18n.platform_twitcast || 'Twitcast',
+	};
+	PAGE_CONFIG.platforms.forEach(platform => {
+		platformContainer.appendChild(createHeaderFilterButton(platformLabels[platform], currentPlatform === platform, () => {
+			currentPlatform = platform;
+			updatePlatformFilters();
+			renderFiltered(false, true);
+		}));
+	});
 }
 
 function createSettingsOptionButton(setting, value, label)

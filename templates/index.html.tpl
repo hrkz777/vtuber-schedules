@@ -185,6 +185,7 @@
 			title: {{TITLE_JSON}},
 			heading: {{HEADING_JSON}},
 			agency: {{AGENCY_JSON}},
+			platforms: {{PLATFORMS_JSON}},
 			apiUrl: {{API_URL_JSON}},
 			relativeBasePath: {{RELATIVE_BASE_PATH_JSON}}
 		});
